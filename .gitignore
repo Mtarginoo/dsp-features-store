@@ -45,3 +45,22 @@ vendor/
 # Docker
 # ========================
 .env.docker
+
+# ========================
+# Processo (local, nunca versionado)
+# ========================
+# Roadmap, ADRs, handoff entre sessões e contexto de trabalho com IA.
+# docs/ é reservado para documentação técnica, essa sim versionável.
+local/
+CLAUDE.md
+
+# ========================
+# Nuvem / IaC
+# ========================
+# NUNCA commitar chaves de API ou estado do Terraform
+oci_api_key*.pem
+*.tfvars
+!*.tfvars.example
+.terraform/
+terraform.tfstate*
+kubeconfig*
