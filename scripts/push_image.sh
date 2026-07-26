@@ -39,6 +39,28 @@ fi
 IMAGE="${REGISTRY}/${NAMESPACE}/${SERVICE}"
 SHA="$(git rev-parse --short HEAD)"
 
+# When the repository does not exist, OCIR creates it in the root compartment
+# on first push -- where the project user is not allowed to write, so the push
+# fails with a bare 403. Creating it here puts it in the project compartment
+# instead, and leaves the push with nothing to do but write.
+: "${OCI_COMPARTMENT_ID:?set OCI_COMPARTMENT_ID or create local/oci.env}"
+
+existing="$(oci artifacts container repository list \
+  --compartment-id "$OCI_COMPARTMENT_ID" \
+  --display-name "$SERVICE" \
+  --query 'data.items[0].id' --raw-output 2>/dev/null || true)"
+
+case "$existing" in
+  ocid1.containerrepo.*) ;;
+  *)
+    echo "creating repository ${SERVICE} in the project compartment"
+    oci artifacts container repository create \
+      --compartment-id "$OCI_COMPARTMENT_ID" \
+      --display-name "$SERVICE" \
+      --query 'data.id' --raw-output >/dev/null
+    ;;
+esac
+
 docker buildx build \
   --platform "$PLATFORM" \
   --file "$DOCKERFILE" \
