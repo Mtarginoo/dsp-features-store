@@ -1,0 +1,12 @@
+.git
+.github
+.venv
+.env
+local
+docs
+infra
+schemas
+scripts
+docker-compose.yml
+Makefile
+*.md

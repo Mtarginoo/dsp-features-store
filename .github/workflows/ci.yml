@@ -36,3 +36,15 @@ jobs:
       - uses: golangci/golangci-lint-action@v9
         with:
           version: v2.12.2
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: services/hello/Dockerfile
+          platforms: linux/amd64
+          push: false
